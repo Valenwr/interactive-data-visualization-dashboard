@@ -326,17 +326,17 @@ def main():
     plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_subgroup, x_name='Disaster Types Subgroup', y_name='Frequency', title='Frequency of Disasters Types')
    
     disaster_frequency_disaster_type = frequency(data_clean, 'Disaster Type')
-    #plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_type, x_name='Disaster Types', y_name='Frequency', title='Frequency of Disasters Types')
+    plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_type, x_name='Disaster Types', y_name='Frequency', title='Frequency of Disasters Types')
     
     disaster_frequency_disaster_month = frequency(data_clean, 'Start Month')
-    #plotter_disaster_frequency(disaster_frequency_disaster_month, x_name='Months', y_name='Number of Disasters', title='Number of Disasters per Month')
+    plotter_disaster_frequency(disaster_frequency_disaster_month, x_name='Months', y_name='Number of Disasters', title='Number of Disasters per Month')
 
     # Plot ocurrences over the years since 1900
-    #occurrences_over_the_years(data_clean, 'Start Year')
+    occurrences_over_the_years(data_clean, 'Start Year')
 
     # Show relationships between two variables
-    #plotter_disasters_heatmap(data_clean, index_col='Start Month', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Month', title='Frequency of Disaster Types by Month')
-    #plotter_disasters_heatmap(data_clean, index_col='Start Year', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Years', title='Frequency of Disaster Types by Year', annot=False)
+    plotter_disasters_heatmap(data_clean, index_col='Start Month', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Month', title='Frequency of Disaster Types by Month')
+    plotter_disasters_heatmap(data_clean, index_col='Start Year', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Years', title='Frequency of Disaster Types by Year', annot=False)
 
     # Times OFDA/BHA Response by Region
     disaster_frequency_disaster_region_BHA = frequency(data_clean, 'Region')
