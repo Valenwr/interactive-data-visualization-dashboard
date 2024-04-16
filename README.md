@@ -26,6 +26,22 @@ You can install these packages using pip:
 pip install pandas numpy matplotlib seaborn
 ```
 
+## Maintaining Compatibility
+
+### Data Updates and Compatibility
+
+The EM-DAT database is regularly updated with new data.
+
+#### Staying Up-to-Date
+We strive to keep this toolkit compatible with the latest versions of the EM-DAT database:
+- **Check for Updates**: Regularly visit the EM-DAT website or subscribe to their updates to stay informed about new data releases and format changes.
+- **Testing New Data**: When new data is released, we recommend testing the data with our scripts before using it extensively. This helps ensure that there are no disruptions due to format changes.
+
+#### What You Can Do
+If you encounter issues with new data formats:
+- **Report Issues**: Please open an issue in this repository if you find that the script does not handle new data correctly. Include details of the error and, if possible, a snippet of the data format that caused the issue.
+- **Contributing Fixes**: If you're able to adapt the script to work with the new data format, consider contributing your changes back to the project through a pull request.
+
 ## Usage
 
 To use this toolkit, follow these steps:
@@ -44,8 +60,8 @@ python Disasters.py
 - **load_data(file_path, sep, encoding='latin-1', header=0)**: Load data from specified CSV file.
 - **initial_inspection(data)**: Conduct a preliminary inspection of the loaded data.
 - **data_cleaning(data, missing_threshold=10, save_original=False, ...)**: Clean the dataset based on defined criteria for missing data.
-- **frequency(data, column_name)**: Compute frequency distributions for a specific column.
-- **plotter_disaster_frequency(frequency_dict, x_name, y_name, title, save_path)**: Visualize frequency distributions using bar charts.
+- **frequency(data, column_name)**: Calculate the frequencies of each unique value in a specified column. 
+- **plotter_disaster_frequency(frequency_dict, x_name, y_name, title, save_path)**: Visualize distributions using bar charts.
 - **plotter_disasters_heatmap(...)**: Create heatmaps for exploring relationships between different data dimensions.
 
 ## Contributing
