@@ -1,11 +1,8 @@
 import pandas as pd
-import geopandas
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import seaborn as sns
 import os
-import sys
 
 def load_data(file_path, sep, encoding='latin-1', header=0):
     """
@@ -164,7 +161,7 @@ def plotter_disaster_frequency(frequency_dict, x_name, y_name, title, save_path)
     os.makedirs(save_path, exist_ok=True)
 
     # Format the file path with the title and '.png' extension
-    file_path = os.path.join(save_path, f"{sanitized_title}.png")
+    file_path = os.path.join(save_path, "files png", f"{sanitized_title}.png")
 
     # Set a style
     plt.style.use('_mpl-gallery') # or ''_mpl-gallery', 'dark_background', 'ggplot', 'grayscale', 'seaborn-v0_8'
@@ -225,7 +222,7 @@ def plotter_disasters_heatmap(data, index_col, columns_col, x_label, y_label, ti
     os.makedirs(save_path, exist_ok=True)
 
     # Format the file path with the title and '.png' extension
-    file_path = os.path.join(save_path, f"{sanitized_title}.png")
+    file_path = os.path.join(save_path, "files png", f"{sanitized_title}.png")
 
     # Remove rows where the index column is missing and ensure it is of type integer
     cleaned_data = data.dropna(subset=[index_col])
@@ -269,7 +266,7 @@ def occurrences_over_the_years(data, column_name, save_path):
     os.makedirs(save_path, exist_ok=True)
 
     # Format the file path with the title and '.png' extension
-    file_path = os.path.join(save_path, f"{sanitized_title}.png")
+    file_path = os.path.join(save_path, "files png", f"{sanitized_title}.png")
 
     # Group data by the specified column and count occurrences
     disaster_counts = data.groupby(column_name).size()
@@ -316,7 +313,7 @@ def plot_grouped_bar_chart(yes, no, save_path, style='default', title='Frequency
     os.makedirs(save_path, exist_ok=True)
 
     # Format the file path with the title and '.png' extension
-    file_path = os.path.join(save_path, f"{sanitized_title}.png")
+    file_path = os.path.join(save_path, "files png", f"{sanitized_title}.png")
 
     # Prepare the data
     regions = list(yes.keys())
