@@ -1,6 +1,8 @@
 # Data Analysis and Visualization Toolkit
 
-This repository contains a Python script that provides tools for data loading, cleaning, and visualization, particularly focusing on disaster data analysis. The toolkit is designed to handle CSV data files, perform preliminary data inspections, clean the data and generate several types of plots.
+This Python script is designed to load, clean, analyze, and visualize disaster-related datasets, specifically utilizing data from the EM-DAT database, provided by the Centre for Research on the Epidemiology of Disasters (CRED). This toolkit handles CSV files and includes functionalities for data inspection, cleaning, frequency analysis, and advanced visualizations.
+
+Visit [EM-DAT](https://www.emdat.be/) for more details on the data.
 
 ## Features
 
@@ -37,6 +39,7 @@ git clone https://github.com/Valenwr/Disasters.git
 cd Disasters
 python Disasters.py
 ```
+
 ## Functions Overview
 - **load_data(file_path, sep, encoding='latin-1', header=0)**: Load data from specified CSV file.
 - **initial_inspection(data)**: Conduct a preliminary inspection of the loaded data.
@@ -44,3 +47,9 @@ python Disasters.py
 - **frequency(data, column_name)**: Compute frequency distributions for a specific column.
 - **plotter_disaster_frequency(frequency_dict, x_name, y_name, title, save_path)**: Visualize frequency distributions using bar charts.
 - **plotter_disasters_heatmap(...)**: Create heatmaps for exploring relationships between different data dimensions.
+
+## Contributing
+Contributions to enhance or expand this toolkit are welcome! Please fork the repository and open a pull request with your improvements, or create an issue to suggest new features or report bugs.
+
+## License
+This project is released under the MIT License. For more details, see the LICENSE.md file in the repository.
