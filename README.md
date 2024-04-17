@@ -10,7 +10,7 @@ Visit [EM-DAT](https://www.emdat.be/) for more details on the data.
 - **Initial Data Inspection**: Get a quick overview of the data including size, basic info, and statistical summaries.
 - **Data Cleaning**: Remove columns with high percentages of missing values and save cleaned data.
 - **Frequency Analysis**: Calculate the frequency of occurrences for specified columns.
-- **Plotting**: Generate bar charts, heatmaps, and line plots to visualize data distributions and trends.
+- **Plotting**: Generate and save bar charts, heatmaps, and line plots as `.png` files to visualize data distributions and trends.
 
 ## Installation
 
