@@ -244,7 +244,7 @@ def plotter_disasters_heatmap(data, index_col, columns_col, x_label, y_label, ti
     plt.savefig(file_path, format='png', dpi=300)  # Save as PNG file with high resolution
     plt.show()
 
-def occurrences_over_the_years(data, column_name, save_path):
+def occurrences_over_the_years(data, column_name, save_path, title):
     """
     Plot the occurrence of events over the years specified in a given column.
 
@@ -260,7 +260,7 @@ def occurrences_over_the_years(data, column_name, save_path):
         raise ValueError(f"The column '{column_name}' does not exist in the DataFrame.")
 
     # Sanitize the title to ensure it's safe for use as a filename
-    sanitized_title = sanitize_filename(column_name)
+    sanitized_title = sanitize_filename(title)
 
     # Make sure the directory exists
     os.makedirs(save_path, exist_ok=True)
@@ -279,7 +279,7 @@ def occurrences_over_the_years(data, column_name, save_path):
     # Setting up the plot
     plt.figure(figsize=(10, 6))
     plt.plot(disaster_counts.index, disaster_counts.values, marker='o', linestyle='-', color='blue')
-    plt.title('Trend of Disaster Incidences Over the Years')
+    plt.title(title)
     plt.xlabel('Year')
     plt.ylabel('Number of Disasters')
     plt.grid(True)  # Adding a grid for better readability
@@ -390,7 +390,7 @@ def main():
     plotter_disaster_frequency(disaster_frequency_disaster_month, x_name='Months', y_name='Number of Disasters', title='Monthly Distribution of Disasters', save_path=base_path)
 
     # Plot ocurrences over the years since 1900
-    occurrences_over_the_years(data_clean, 'Start Year', save_path=base_path)
+    occurrences_over_the_years(data_clean, 'Start Year', save_path=base_path, title='Trend of Disaster Incidences Over the Years')
 
     # Show relationships between two variables
     plotter_disasters_heatmap(data_clean, index_col='Start Month', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Month', title='Heatmap of Disaster Occurrences by Type and Month', save_path=base_path)
