@@ -279,7 +279,7 @@ def occurrences_over_the_years(data, column_name, save_path):
     # Setting up the plot
     plt.figure(figsize=(10, 6))
     plt.plot(disaster_counts.index, disaster_counts.values, marker='o', linestyle='-', color='blue')
-    plt.title('Number of Disasters per Year')
+    plt.title('Trend of Disaster Incidences Over the Years')
     plt.xlabel('Year')
     plt.ylabel('Number of Disasters')
     plt.grid(True)  # Adding a grid for better readability
@@ -288,7 +288,7 @@ def occurrences_over_the_years(data, column_name, save_path):
     plt.savefig(file_path, format='png', dpi=300)  # Save as PNG file with high resolution
     plt.show()
 
-def plot_grouped_bar_chart(yes, no, save_path, style='default', title='Frequency of Responses by Region',
+def plot_grouped_bar_chart(yes, no, save_path, style='default', title='Comparative Regional Response Rates',
                            colors=('blue', 'orange'), bar_width=0.35, figsize=(14, 8)):
     """
     Plots a grouped bar chart with 'Yes' and 'No' response frequencies by region.
@@ -381,24 +381,24 @@ def main():
     
     # Plot the frequency of Disasters Subgroup and Disasters Type / Months
     disaster_frequency_disaster_subgroup = frequency(data_clean, 'Disaster Subgroup')
-    plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_subgroup, x_name='Disaster Types Subgroup', y_name='Frequency', title='Frequency of Disasters Subgroups', save_path=base_path)
+    plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_subgroup, x_name='Disaster Types Subgroup', y_name='Frequency', title='Bar Chart of Disaster Subgroup Occurrences', save_path=base_path)
    
     disaster_frequency_disaster_type = frequency(data_clean, 'Disaster Type')
-    plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_type, x_name='Disaster Types', y_name='Frequency', title='Frequency of Disasters Types', save_path=base_path)
+    plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_type, x_name='Disaster Types', y_name='Frequency', title='Bar Chart of Disaster Types Distribution', save_path=base_path)
     
     disaster_frequency_disaster_month = frequency(data_clean, 'Start Month')
-    plotter_disaster_frequency(disaster_frequency_disaster_month, x_name='Months', y_name='Number of Disasters', title='Number of Disasters per Month', save_path=base_path)
+    plotter_disaster_frequency(disaster_frequency_disaster_month, x_name='Months', y_name='Number of Disasters', title='Monthly Distribution of Disasters', save_path=base_path)
 
     # Plot ocurrences over the years since 1900
     occurrences_over_the_years(data_clean, 'Start Year', save_path=base_path)
 
     # Show relationships between two variables
-    plotter_disasters_heatmap(data_clean, index_col='Start Month', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Month', title='Frequency of Disaster Types by Month', save_path=base_path)
-    plotter_disasters_heatmap(data_clean, index_col='Start Year', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Years', title='Frequency of Disaster Types by Year', annot=False, save_path=base_path)
+    plotter_disasters_heatmap(data_clean, index_col='Start Month', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Month', title='Heatmap of Disaster Occurrences by Type and Month', save_path=base_path)
+    plotter_disasters_heatmap(data_clean, index_col='Start Year', columns_col='Disaster Subgroup', x_label='Disaster Type', y_label='Years', title='Heatmap of Annual Disaster Frequency by Type', annot=False, save_path=base_path)
 
     # Times OFDA/BHA Response by Region
     disaster_frequency_disaster_region_BHA = frequency(data_clean, 'Region')
-    plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_region_BHA, x_name='Responses', y_name='Regions', title='OFDA/BHA Response', save_path=base_path)
+    plotter_disaster_frequency(frequency_dict=disaster_frequency_disaster_region_BHA, x_name='Responses', y_name='Regions', title='Regional Disaster Response Frequency OFDA/BHA', save_path=base_path)
 
     # Times YES/NO
     disaster_frequency_disaster_region_BHA_yes = frequency_response(data_clean, 'Yes', 'Region')
