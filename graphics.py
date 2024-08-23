@@ -3,128 +3,215 @@ import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.subplots import make_subplots
-from graph-functions import load_data, data_cleaning, frequency, frequency_response
+from graphfunctions import load_data, data_cleaning
 
-# Helper functions (load_data, initial_inspection, data_cleaning, frequency, sanitize_filename, frequency_response)
-# [Include all the helper functions from the original script here]
-
-# Enhanced plotting functions using Plotly
-def plotter_disaster_frequency(frequency_dict, x_name, y_name, title):
-    df = pd.DataFrame(list(frequency_dict.items()), columns=[x_name, y_name])
-    fig = px.bar(df, x=x_name, y=y_name, title=title,
-                 labels={x_name: x_name, y_name: y_name},
-                 color=x_name, text=y_name)
-    fig.update_traces(texttemplate='%{text:.1f}', textposition='outside')
-    fig.update_layout(uniformtext_minsize=8, uniformtext_mode='hide')
+def plot_disaster_group_distribution(data):
+    group_data = data['Disaster Group'].value_counts()
+    fig = px.pie(values=group_data.values, names=group_data.index,
+                 title='Distribution of Disaster Groups')
     return fig
 
-def plotter_disasters_heatmap(data, index_col, columns_col, x_label, y_label, title):
-    cleaned_data = data.dropna(subset=[index_col])
-    cleaned_data[index_col] = cleaned_data[index_col].astype(int)
-    data_cross_tab = pd.crosstab(cleaned_data[index_col], cleaned_data[columns_col])
-    
-    fig = px.imshow(data_cross_tab, labels=dict(x=x_label, y=y_label),
-                    x=data_cross_tab.columns, y=data_cross_tab.index,
-                    title=title)
-    fig.update_xaxes(side="top")
+def plot_top_disaster_types(data, n=10):
+    top_disasters = data['Disaster Type'].value_counts().nlargest(n)
+    fig = px.bar(x=top_disasters.index, y=top_disasters.values,
+                 labels={'x':'Disaster Type', 'y':'Count'},
+                 title=f'Top {n} Most Frequent Disaster Types')
     return fig
 
-def occurrences_over_the_years(data, column_name, title):
-    disaster_counts = data.groupby(column_name).size().sort_index().reset_index()
-    disaster_counts.columns = [column_name, 'Count']
-    
-    fig = px.line(disaster_counts, x=column_name, y='Count', title=title,
-                  labels={column_name: 'Year', 'Count': 'Number of Disasters'})
-    fig.update_traces(mode='lines+markers')
+def plot_yearly_trend(data):
+    yearly_data = data.groupby('Start Year').size().reset_index(name='Count')
+    fig = px.line(yearly_data, x='Start Year', y='Count',
+                  title='Yearly Trend of Disaster Occurrences')
     return fig
 
-def plot_grouped_bar_chart(yes, no, title='Comparative Regional Response Rates'):
-    regions = list(yes.keys())
-    yes_counts = [yes.get(region, 0) for region in regions]
-    no_counts = [no.get(region, 0) for region in regions]
-    
-    fig = go.Figure(data=[
-        go.Bar(name='Yes Responses', x=regions, y=yes_counts, text=yes_counts),
-        go.Bar(name='No Responses', x=regions, y=no_counts, text=no_counts)
-    ])
-    
-    fig.update_layout(barmode='group', title=title,
-                      xaxis_title='Region', yaxis_title='Frequency')
-    fig.update_traces(texttemplate='%{text}', textposition='outside')
+def plot_regional_comparison(data):
+    regional_data = data.groupby('Region').size().reset_index(name='Count')
+    fig = px.bar(regional_data, x='Region', y='Count',
+                 title='Number of Disasters by Region')
+    fig.update_layout(xaxis={'categoryorder':'total descending'})
     return fig
 
-# New function: Animated time series of disasters
-def animate_disasters_over_time(data):
-    data['Year'] = pd.to_datetime(data['Start Year'], format='%Y')
-    disaster_counts = data.groupby(['Year', 'Disaster Subgroup']).size().reset_index(name='Count')
-    
-    fig = px.scatter(disaster_counts, x="Year", y="Count", size="Count", color="Disaster Subgroup",
-                     hover_name="Disaster Subgroup", log_y=True, size_max=60,
-                     range_y=[1,disaster_counts['Count'].max()],
-                     title="Disaster Occurrences Over Time")
-    
-    fig.update_layout(xaxis=dict(rangeslider=dict(visible=True), type="date"))
+def plot_monthly_distribution(data):
+    monthly_data = data['Start Month'].value_counts().sort_index()
+    fig = px.line_polar(r=monthly_data.values, theta=monthly_data.index, line_close=True,
+                        title='Monthly Distribution of Disasters')
     return fig
 
-# Main Streamlit App
+def plot_disaster_subgroup_occurrences(data):
+    subgroup_data = data['Disaster Subgroup'].value_counts()
+    fig = px.bar(x=subgroup_data.index, y=subgroup_data.values,
+                 labels={'x':'Disaster Subgroup', 'y':'Count'},
+                 title='Bar Chart of Disaster Subgroup Occurrences')
+    fig.update_layout(xaxis={'categoryorder':'total descending'})
+    return fig
+
+def plot_disaster_types_distribution(data):
+    type_data = data['Disaster Type'].value_counts()
+    fig = px.bar(x=type_data.index, y=type_data.values,
+                 labels={'x':'Disaster Type', 'y':'Count'},
+                 title='Bar Chart of Disaster Types Distribution')
+    fig.update_layout(xaxis={'categoryorder':'total descending'})
+    return fig
+
+def plot_heatmap_type_month(data):
+    heatmap_data = pd.crosstab(data['Start Month'], data['Disaster Type'])
+    fig = px.imshow(heatmap_data,
+                    labels=dict(x="Disaster Type", y="Month", color="Count"),
+                    title="Heatmap of Disaster Occurrences by Type and Month")
+    fig.update_layout(xaxis={'categoryorder':'total ascending'})
+    return fig
+
+def plot_monthly_distribution_bar(data):
+    monthly_data = data['Start Month'].value_counts().sort_index()
+    fig = px.bar(x=monthly_data.index, y=monthly_data.values,
+                 labels={'x':'Month', 'y':'Count'},
+                 title='Monthly Distribution of Disasters')
+    return fig
+
+def plot_subgroup_heatmap(data):
+    subgroup_data = pd.crosstab(data['Disaster Group'], data['Disaster Subgroup'])
+    fig = px.imshow(subgroup_data, 
+                    labels=dict(x="Disaster Subgroup", y="Disaster Group", color="Count"),
+                    title="Heatmap of Disaster Groups and Subgroups")
+    return fig
+
+def plot_response_comparison(data):
+    response_data = data['OFDA/BHA Response'].value_counts()
+    fig = px.bar(x=response_data.index, y=response_data.values,
+                 labels={'x':'OFDA/BHA Response', 'y':'Count'},
+                 title='OFDA/BHA Response Distribution')
+    return fig
+
+def make_choropleth(input_df, input_column, input_color_theme):
+    # Assuming 'ISO' column contains country codes
+    choropleth = px.choropleth(input_df, 
+                               locations='ISO', 
+                               color=input_column, 
+                               color_continuous_scale=input_color_theme,
+                               range_color=(0, input_df[input_column].max()),
+                               scope="world",
+                               labels={input_column: input_column}
+                              )
+    choropleth.update_layout(
+        template='plotly_dark',
+        plot_bgcolor='rgba(0, 0, 0, 0)',
+        paper_bgcolor='rgba(0, 0, 0, 0)',
+        margin=dict(l=0, r=0, t=0, b=0),
+        height=500
+    )
+    return choropleth
+
 def main():
-    st.title("Enhanced Disaster Analysis Dashboard")
+    st.set_page_config(page_title="Disaster Analysis Dashboard", page_icon="🌪️", layout="wide")
 
-    uploaded_file = st.file_uploader("Choose a CSV file", type="csv")
+    st.title("🌪️ Disaster Analysis Dashboard")
+    st.sidebar.image("https://www.example.com/your_logo.png", width=200)  # Replace with your logo URL
+
+    uploaded_file = st.sidebar.file_uploader("Choose a CSV file", type="csv")
+    
+    # Replace 'your_file.csv' with the actual name of your CSV file
+    file_path = 'public_emdat_incl_hist_2024-08-19.csv'
+
+    # Read the CSV file
+    df = pd.read_csv(file_path)
+    # Display the dataframe in the Streamlit app
+    #st.write(df)
+
     if uploaded_file is not None:
         data = load_data(uploaded_file, sep=';', encoding='latin-1', header=0)
         data_clean = data_cleaning(data, 10)
 
-        st.sidebar.header("Choose Visualization")
-        viz_option = st.sidebar.selectbox(
-            "Select a visualization",
-            ("Disaster Subgroup Frequency", "Disaster Type Distribution", "Monthly Distribution",
-             "Trend Over Years", "Heatmap by Type and Month", "Annual Heatmap",
-             "Regional Response Frequency", "Comparative Regional Response",
-             "Animated Time Series")
+        # Sidebar filters
+        st.sidebar.header("Filters")
+        selected_years = st.sidebar.slider(
+            "Select Year Range",
+            min_value=int(data_clean['Start Year'].min()),
+            max_value=int(data_clean['Start Year'].max()),
+            value=(int(data_clean['Start Year'].min()), int(data_clean['Start Year'].max()))
+        )
+        selected_regions = st.sidebar.multiselect(
+            "Select Regions",
+            options=data_clean['Region'].unique(),
+            default=data_clean['Region'].unique()
         )
 
-        if viz_option == "Disaster Subgroup Frequency":
-            freq_dict = frequency(data_clean, 'Disaster Subgroup')
-            fig = plotter_disaster_frequency(freq_dict, 'Disaster Types Subgroup', 'Frequency', 'Interactive Bar Chart of Disaster Subgroup Occurrences')
-            st.plotly_chart(fig)
+        # Apply filters
+        filtered_data = data_clean[
+            (data_clean['Start Year'].between(selected_years[0], selected_years[1])) &
+            (data_clean['Region'].isin(selected_regions))
+        ]
 
-        elif viz_option == "Disaster Type Distribution":
-            freq_dict = frequency(data_clean, 'Disaster Type')
-            fig = plotter_disaster_frequency(freq_dict, 'Disaster Types', 'Frequency', 'Interactive Bar Chart of Disaster Types Distribution')
-            st.plotly_chart(fig)
+        # Main content area with tabs
+        tab1, tab2, tab3, tab4 = st.tabs(["Overview", "Temporal Analysis", "Geographical Analysis", "Choropleth Map"])
 
-        elif viz_option == "Monthly Distribution":
-            freq_dict = frequency(data_clean, 'Start Month')
-            fig = plotter_disaster_frequency(freq_dict, 'Months', 'Number of Disasters', 'Interactive Monthly Distribution of Disasters')
-            st.plotly_chart(fig)
+        with tab1:
+            st.header("Disaster Overview")
+            col1, col2 = st.columns(2)
+            with col1:
+                st.subheader("Disaster Group Distribution")
+                fig_group = plot_disaster_group_distribution(filtered_data)
+                st.plotly_chart(fig_group, use_container_width=True)
+            with col2:
+                st.subheader("Top Disaster Types")
+                fig_top = plot_top_disaster_types(filtered_data)
+                st.plotly_chart(fig_top, use_container_width=True)
 
-        elif viz_option == "Trend Over Years":
-            fig = occurrences_over_the_years(data_clean, 'Start Year', 'Interactive Trend of Disaster Incidences Over the Years')
-            st.plotly_chart(fig)
+            st.subheader("Disaster Groups and Subgroups Heatmap")
+            fig_heatmap = plot_subgroup_heatmap(filtered_data)
+            st.plotly_chart(fig_heatmap, use_container_width=True)
 
-        elif viz_option == "Heatmap by Type and Month":
-            fig = plotter_disasters_heatmap(data_clean, 'Start Month', 'Disaster Subgroup', 'Disaster Type', 'Month', 'Interactive Heatmap of Disaster Occurrences by Type and Month')
-            st.plotly_chart(fig)
+        with tab2:
+            st.header("Temporal Analysis")
+            st.subheader("Yearly Trend of Disaster Occurrences")
+            fig_trend = plot_yearly_trend(filtered_data)
+            st.plotly_chart(fig_trend, use_container_width=True)
 
-        elif viz_option == "Annual Heatmap":
-            fig = plotter_disasters_heatmap(data_clean, 'Start Year', 'Disaster Subgroup', 'Disaster Type', 'Years', 'Interactive Heatmap of Annual Disaster Frequency by Type')
-            st.plotly_chart(fig)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.subheader("Monthly Distribution (Polar)")
+                fig_monthly = plot_monthly_distribution(filtered_data)
+                st.plotly_chart(fig_monthly, use_container_width=True)
+            with col2:
+                st.subheader("Monthly Distribution (Bar)")
+                fig_monthly_bar = plot_monthly_distribution_bar(filtered_data)
+                st.plotly_chart(fig_monthly_bar, use_container_width=True)
 
-        elif viz_option == "Regional Response Frequency":
-            freq_dict = frequency(data_clean, 'Region')
-            fig = plotter_disaster_frequency(freq_dict, 'Regions', 'Responses', 'Interactive Regional Disaster Response Frequency OFDA/BHA')
-            st.plotly_chart(fig)
+            st.subheader("Heatmap of Disaster Occurrences by Type and Month")
+            fig_heatmap_type_month = plot_heatmap_type_month(filtered_data)
+            st.plotly_chart(fig_heatmap_type_month, use_container_width=True)
 
-        elif viz_option == "Comparative Regional Response":
-            yes_dict = frequency_response(data_clean, 'Yes', 'Region')
-            no_dict = frequency_response(data_clean, 'No', 'Region')
-            fig = plot_grouped_bar_chart(yes_dict, no_dict)
-            st.plotly_chart(fig)
+        with tab3:
+            st.header("Geographical Analysis")
+            st.subheader("Regional Comparison")
+            fig_regional = plot_regional_comparison(filtered_data)
+            st.plotly_chart(fig_regional, use_container_width=True)
 
-        elif viz_option == "Animated Time Series":
-            fig = animate_disasters_over_time(data_clean)
-            st.plotly_chart(fig)
+            st.subheader("OFDA/BHA Response Distribution")
+            fig_response = plot_response_comparison(filtered_data)
+            st.plotly_chart(fig_response, use_container_width=True)
+
+        with tab4:
+            st.header("Choropleth Map")
+            
+            # Prepare data for choropleth
+            choropleth_data = filtered_data.groupby('ISO').size().reset_index(name='Disaster Count')
+            
+            # Color theme selection
+            color_theme = st.selectbox("Select Color Theme", 
+                                       ["Viridis", "Plasma", "Inferno", "Magma", "Cividis"])
+            
+            # Create choropleth map
+            fig_choropleth = make_choropleth(choropleth_data, 'Disaster Count', color_theme)
+            st.plotly_chart(fig_choropleth, use_container_width=True)
+            
+            st.markdown("""
+            This choropleth map shows the distribution of disaster occurrences across countries. 
+            Darker colors indicate a higher number of disasters in the selected time period and regions.
+            """)
+
+        # Footer
+        st.markdown("---")
+        st.markdown("Dashboard created with ❤️ using Streamlit")
 
 if __name__ == "__main__":
     main()
