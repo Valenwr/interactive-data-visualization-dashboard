@@ -103,7 +103,7 @@ def main():
     print("Base Path:", base_path)
 
     # Construct the full path to the file
-    file_path = os.path.join(base_path, "Disasters_1900_2022.csv")
+    file_path = os.path.join(base_path, "public_emdat_custom_request_2024-08-23.csv")
     print("Full Path to File:", file_path)
 
     # Check if the file exists
@@ -116,7 +116,7 @@ def main():
     data_disasters = load_data(file_path, sep=';', encoding='latin-1', header=0)
 
     data = initial_inspection(data_disasters)
-    data_clean = data_cleaning(data, 10, False, original_filename='data_all_columns.csv', cleaned_filename='data_columns_cleaned.csv')
+    data_cleaning(data, 10, False, original_filename='data_all_columns.csv', cleaned_filename='data_columns_cleaned.csv')
 
 if __name__ == "__main__":
     main()
