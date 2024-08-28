@@ -53,13 +53,65 @@ def plot_disaster_types_distribution(data):
     fig.update_layout(xaxis={'categoryorder':'total descending'})
     return fig
 
-# Function to create a heatmap of disaster occurrences by type and month
-def plot_heatmap_type_month(data):
-    heatmap_data = pd.crosstab(data['Start Month'], data['Disaster Type'])
-    fig = px.imshow(heatmap_data,
-                    labels=dict(x="Disaster Type", y="Month", color="Count"),
-                    title="Heatmap of Disaster Occurrences by Type and Month")
-    fig.update_layout(xaxis={'categoryorder':'total ascending'})
+def plot_complex_disaster_bubble_chart(data, selected_disaster_groups, selected_regions):
+    # Filter the data based on selected disaster groups and regions
+    filtered_data = data[
+        (data['Disaster Group'].isin(selected_disaster_groups)) &
+        (data['Region'].isin(selected_regions))
+    ]
+    
+    # Prepare the data
+    summary_data = filtered_data.groupby(['Disaster Group', 'Start Month', 'Region']).agg({
+        'DisNo': 'count',
+        'Start Year': 'min',
+        'End Year': 'max',
+        'OFDA/BHA Response': lambda x: x.notna().sum(),
+        'Appeal': lambda x: x.notna().sum(),
+        'Declaration': lambda x: x.notna().sum()
+    }).reset_index()
+    
+    summary_data.columns = ['Disaster Group', 'Month', 'Region', 'Count', 'First Occurrence', 'Last Occurrence', 'OFDA Responses', 'Appeals', 'Declarations']
+    
+    # Calculate a composite 'Impact Score'
+    summary_data['Impact Score'] = summary_data['OFDA Responses'] + summary_data['Appeals'] + summary_data['Declarations']
+    
+    # Create the bubble chart
+    fig = px.scatter(summary_data, 
+                     x='Month', 
+                     y='Disaster Group', 
+                     size='Count',
+                     color='Region',
+                     hover_name='Disaster Group',
+                     hover_data=['Count', 'First Occurrence', 'Last Occurrence', 'OFDA Responses', 'Appeals', 'Declarations', 'Impact Score'],
+                     title="Complex Bubble Chart of Disaster Occurrences",
+                     color_discrete_sequence=px.colors.qualitative.Prism)
+    
+    # Customize the layout
+    fig.update_layout(
+        xaxis_title="Month",
+        yaxis_title="Disaster Group",
+        xaxis=dict(tickmode='linear', tick0=1, dtick=1),
+        yaxis={'categoryorder':'total descending'},
+        legend_title="Region"
+    )
+    
+    # Adjust bubble size for better visibility
+    fig.update_traces(marker=dict(sizemode='area', sizeref=2.*max(summary_data['Count'])/(40.**2), sizemin=4))
+    
+    # Add custom hover template
+    fig.update_traces(
+        hovertemplate="<b>%{hovertext}</b><br>" +
+        "Month: %{x}<br>" +
+        "Count: %{marker.size}<br>" +
+        "Region: %{color}<br>" +
+        "First Occurrence: %{customdata[1]}<br>" +
+        "Last Occurrence: %{customdata[2]}<br>" +
+        "OFDA Responses: %{customdata[3]}<br>" +
+        "Appeals: %{customdata[4]}<br>" +
+        "Declarations: %{customdata[5]}<br>" +
+        "Impact Score: %{customdata[6]}<extra></extra>"
+    )
+    
     return fig
 
 # Function to plot the monthly distribution of disasters using a bar chart
@@ -131,7 +183,7 @@ def main():
 
     base_path = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(base_path, "data-clean.csv")
-    
+
     # Load the data
     data_clean = load_data(file_path, sep=',', encoding='latin-1', header=0)
 
@@ -148,11 +200,17 @@ def main():
         options=data_clean['Region'].unique(),
         default=data_clean['Region'].unique()
     )
+    selected_disaster_groups = st.sidebar.multiselect(
+        "Select Disaster Groups",
+        options=data_clean['Disaster Group'].unique(),
+        default=data_clean['Disaster Group'].unique()
+    )
 
     # Apply filters to the data
     filtered_data = data_clean[
         (data_clean['Start Year'].between(selected_years[0], selected_years[1])) &
-        (data_clean['Region'].isin(selected_regions))
+        (data_clean['Region'].isin(selected_regions)) &
+        (data_clean['Disaster Group'].isin(selected_disaster_groups))
     ]
 
     # Create tabs for different sections of the dashboard
@@ -190,7 +248,7 @@ def main():
             st.plotly_chart(fig_monthly_bar, use_container_width=True)
 
         st.subheader("Heatmap of Disaster Occurrences by Type and Month")
-        fig_heatmap_type_month = plot_heatmap_type_month(filtered_data)
+        fig_heatmap_type_month = plot_complex_disaster_bubble_chart(filtered_data, selected_disaster_groups, selected_regions)
         st.plotly_chart(fig_heatmap_type_month, use_container_width=True)
 
     # Tab 3: Choropleth Map
