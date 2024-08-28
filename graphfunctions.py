@@ -1,7 +1,4 @@
 import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import os
 
 def load_data(file_path, sep, encoding='latin-1', header=0):

@@ -1,5 +1,6 @@
 # Import necessary libraries
 import streamlit as st
+import os
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
@@ -128,8 +129,11 @@ def main():
     # Set the title and logo
     st.title("📊 Disaster Analysis Dashboard")
 
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(base_path, "data-clean.csv")
+    
     # Load the data
-    data_clean = load_data(r'C:\Users\Valentina\Desktop\Proyectos\Disasters\data-clean.csv', sep=',', encoding='latin-1', header=0)
+    data_clean = load_data(file_path, sep=',', encoding='latin-1', header=0)
 
     # Sidebar filters
     st.sidebar.header("Filters")
