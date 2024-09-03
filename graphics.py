@@ -2,7 +2,6 @@ import os
 import streamlit as st
 import plotly.express as px
 import plotly.graph_objects as go
-import pandas as pd
 from graphfunctions import load_data
 
 # Function to plot the distribution of disaster groups
@@ -57,21 +56,6 @@ def plot_disaster_subtypes(data):
                      color_continuous_scale=px.colors.sequential.Viridis)
     return fig
 
-# Function to plot the response comparison
-def plot_response_comparison(data):
-    response_data = data[['OFDA/BHA Response', 'Appeal', 'Declaration']].notna().sum()
-    fig = go.Figure(data=[go.Bar(
-        x=response_data.index,
-        y=response_data.values,
-        text=response_data.values,
-        textposition='auto',
-        marker_color=['#636EFA', '#EF553B', '#00CC96']
-    )])
-    fig.update_layout(title='Comparison of Response Types',
-                      xaxis_title='Response Type',
-                      yaxis_title='Count')
-    return fig
-
 # Function to create a choropleth map
 def make_choropleth(input_df, input_column, input_color_theme):
     choropleth = px.choropleth(input_df, 
@@ -87,20 +71,11 @@ def make_choropleth(input_df, input_column, input_color_theme):
     )
     return choropleth
 
-# Function to plot disaster impact over time
-def plot_disaster_impact(data):
-    impact_data = data.groupby('Start Year')[['OFDA/BHA Response', 'Appeal', 'Declaration']].sum()
-    fig = px.area(impact_data, x=impact_data.index, y=impact_data.columns,
-                  title='Disaster Impact Over Time',
-                  labels={'value': 'Count', 'variable': 'Response Type'},
-                  color_discrete_sequence=px.colors.qualitative.Set2)
-    return fig
-
 # Main function to run the Streamlit app
 def main():
-    st.set_page_config(page_title="Enhanced Disaster Analysis Dashboard", page_icon="🌪️", layout="wide")
+    st.set_page_config(page_title="Disaster Analysis Dashboard", page_icon="🌪️", layout="wide")
 
-    st.title("🌪️ Enhanced Disaster Analysis Dashboard")
+    st.title("🌪️ Disaster Analysis Dashboard")
 
     base_path = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(base_path, "data-clean.csv")
@@ -131,8 +106,8 @@ def main():
         (data_clean['Disaster Group'].isin(selected_disaster_groups))
     ]
 
-    tab1, tab2, tab3, tab4 = st.tabs(["Overview", "Temporal Analysis", "Spatial Analysis", "Impact Analysis"])
-    
+    tab1, tab2, tab3 = st.tabs(["Overview", "Temporal Analysis", "Spatial Analysis"])
+
     with tab1:
         st.header("Disaster Overview")
         col1, col2 = st.columns(2)
@@ -166,11 +141,6 @@ def main():
                                    color=top_countries.values,
                                    color_continuous_scale=px.colors.sequential.Viridis)
         st.plotly_chart(fig_top_countries, use_container_width=True)
-
-    with tab4:
-        st.header("Impact Analysis")
-        st.plotly_chart(plot_response_comparison(filtered_data), use_container_width=True)
-        st.plotly_chart(plot_disaster_impact(filtered_data), use_container_width=True)
 
     st.markdown("---")
     st.markdown("Enhanced Dashboard created with ❤️ using Streamlit and Plotly")
